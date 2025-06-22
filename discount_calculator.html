@@ -33,76 +33,52 @@
   <h2>حساب خصم الوزنة</h2>
 
   <!-- مدخلات -->
-  <input type="number" id="weightKg" placeholder="الوزنة (كجم)" min="0" step="any">
-  <br>
-  <input type="number" id="discountPct" placeholder="نسبة الخصم ٪" min="0" step="any">
-  <br>
+  <input type="number" id="weightKg" placeholder="الوزنة (كجم)" min="0" step="any"><br>
+  <input type="number" id="discountPct" placeholder="نسبة الخصم ٪" min="0" step="any"><br>
   <button onclick="calcDiscount()">احسب الخصم</button>
   <button onclick="resetForm()">إعادة تعيين</button>
 
   <!-- المخرجات -->
-  <div class="result">
-    وزن الخصم: <span id="discountWeight">--</span>
-  </div>
-  <div class="result">
-    وزن الخصم لكل طن: <span id="discountPerTon">--</span>
-  </div>
-  <div class="result">
-    النسبة الفعلية المستخدمة: <span id="effectivePct">--</span>
-  </div>
-  <div class="result">
-    وزن 2٪: <span id="twoPercentWeight">--</span>
-  </div>
-  <div class="note">
-    آخر حاجة أقدر أخصمها على العميل = <span id="noteDeduct">--</span> كجم.
-  </div>
+  <div class="result">وزن الخصم: <span id="discountWeight">--</span></div>
+  <div class="result">وزن الخصم لكل طن: <span id="discountPerTon">--</span></div>
+  <div class="result">النسبة الفعلية المستخدمة: <span id="effectivePct">--</span></div>
+  <div class="note">آخر حاجة أقدر أخصمها على العميل = <span id="noteDeduct">--</span> كجم.</div>
 
   <script>
     function calcDiscount() {
-      const weightInput = document.getElementById('weightKg');
-      const pctInput = document.getElementById('discountPct');
+      const weight = parseFloat(document.getElementById('weightKg').value);
+      const pct = parseFloat(document.getElementById('discountPct').value);
       const discountWeightSpan = document.getElementById('discountWeight');
       const discountPerTonSpan = document.getElementById('discountPerTon');
       const effectivePctSpan = document.getElementById('effectivePct');
-      const twoPercentSpan = document.getElementById('twoPercentWeight');
       const noteDeductSpan = document.getElementById('noteDeduct');
 
-      const weight = parseFloat(weightInput.value);
-      let pct = parseFloat(pctInput.value);
-
-      // التحقق من القيم
+      // تحقق من صحة البيانات
       if (isNaN(weight) || weight <= 0) {
         discountWeightSpan.textContent = 'يرجى إدخال وزن صحيح';
-        discountPerTonSpan.textContent = effectivePctSpan.textContent = twoPercentSpan.textContent = noteDeductSpan.textContent = '--';
+        discountPerTonSpan.textContent = effectivePctSpan.textContent = noteDeductSpan.textContent = '--';
         return;
       }
-
       if (isNaN(pct) || pct < 0) {
         discountWeightSpan.textContent = 'يرجى إدخال نسبة خصم صحيحة';
-        discountPerTonSpan.textContent = effectivePctSpan.textContent = twoPercentSpan.textContent = noteDeductSpan.textContent = '--';
+        discountPerTonSpan.textContent = effectivePctSpan.textContent = noteDeductSpan.textContent = '--';
         return;
       }
 
-      // حساب وزن 2٪
-      const twoPercentWeight = 0.02 * weight;
-      twoPercentSpan.textContent = twoPercentWeight.toFixed(2) + ' كجم';
-
-      // حد أدنى 2٪
-      const effectivePct = Math.max(pct, 2);
-
-      const discountWeight = (effectivePct / 100) * weight;
-
-      // حساب الفرق بعد حد الـ2٪
-      const diff = discountWeight - twoPercentWeight;
+      // حساب وزن الخصم
+      const discountWeight = (pct / 100) * weight;
 
       // حساب وزن الخصم لكل طن
       const discountPerTon = (discountWeight / weight) * 1000; // كجم لكل طن
 
+      // آخر خصم يُمكن تحمله = وزن الخصم × 2.5%
+      const finalDeduct = weight * 0.025;
+
       // عرض النتائج
       discountWeightSpan.textContent = discountWeight.toFixed(2) + ' كجم';
       discountPerTonSpan.textContent = discountPerTon.toFixed(2) + ' كجم/طن';
-      effectivePctSpan.textContent = effectivePct.toFixed(2) + '٪';
-      noteDeductSpan.textContent = diff.toFixed(2);
+      effectivePctSpan.textContent = pct.toFixed(2) + '٪';
+      noteDeductSpan.textContent = finalDeduct.toFixed(2);
     }
 
     function resetForm() {
@@ -111,7 +87,6 @@
       document.getElementById('discountWeight').textContent = '--';
       document.getElementById('discountPerTon').textContent = '--';
       document.getElementById('effectivePct').textContent = '--';
-      document.getElementById('twoPercentWeight').textContent = '--';
       document.getElementById('noteDeduct').textContent = '--';
     }
   </script>
